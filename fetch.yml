@@ -1,0 +1,21 @@
+name: Fetch M3U Playlist
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-playlist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Fetch playlist with curl
+        run: |
+          curl -A "TiviMate/4.7 Android" "https://m3u.ygxworld.in/p/KzfkDpovzMDW/playlist.m3u" -o playlist.m3u
+
+      - name: Upload playlist as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: playlist
+          path: playlist.m3u
