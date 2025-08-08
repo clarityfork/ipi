@@ -1,0 +1,32 @@
+name: Combine M3U Playlists
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Runs daily at 00:00 UTC
+  workflow_dispatch:      # Allows manual run
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Combine M3U playlists
+        run: |
+          mkdir -p playlists
+          > playlists/combined.m3u
+          while read url; do
+            echo "Fetching: $url"
+            curl -s "$url" >> playlists/combined.m3u
+            echo -e "\n" >> playlists/combined.m3u
+          done < sources.txt
+
+      - name: Commit combined playlist
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add playlists/combined.m3u
+          git commit -m "Update combined.m3u"
+          git push
